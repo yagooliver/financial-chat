@@ -5,7 +5,7 @@
 
 What is the Financial chat Project?
 =====================
-Is a simple browser-based chat application using .NET core that use signalR to make the communication with logged users. Also, the user can make calls the code "/stock=stock_code" to know the stock price.
+Is a simple browser-based chat application using .NET core that use signalR to make the communication with logged users. Also, the user can make calls using the code "/stock=stock_code" to know the stock price.
 
 
 ## How to use:
