@@ -2,6 +2,7 @@
 using Financial.Chat.Domain.Core.Interfaces;
 using Financial.Chat.Domain.Core.Interfaces.Services;
 using Financial.Chat.Domain.Shared.Entity;
+using Financial.Chat.Domain.Shared.Helper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -22,7 +23,11 @@ namespace Financial.Chat.Application.Services
             _config = config;
         }
 
-        public User Authenticate(string email, string password) => _userRepository.GetByExpression(x => x.Email == email && x.Password == password).FirstOrDefault();
+        public User Authenticate(string email, string password)
+        {
+            var passwordEncrypt = Cryptography.PasswordEncrypt(password);
+            return _userRepository.GetByExpression(x => x.Email == email && x.Password == passwordEncrypt).FirstOrDefault();
+        }
 
         public TokenJWT GetToken(Guid id, string email)
         {

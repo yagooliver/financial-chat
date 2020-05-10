@@ -1,10 +1,12 @@
 using Financial.Chat.Application.AutoMapper;
+using Financial.Chat.Infra.Data.Context;
 using Financial.Chat.Infra.Ioc;
 using Financial.Chat.Web.API.Config;
 using Financial.Chat.Web.API.Configurations;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +32,9 @@ namespace Financial.Chat.Web.API
             {
                 options.AddPolicy("CorsPolicy", builder => builder.SetIsOriginAllowed(_ => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials().Build());
             });
+
+            services.AddDbContext<FinancialChatContext>
+                (options => options.UseSqlServer(Configuration.GetConnectionString("FinancialChatConnection")));
 
             services.AddIdentitySetup(Configuration);
 

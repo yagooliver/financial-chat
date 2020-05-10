@@ -139,8 +139,19 @@ namespace Financial.Chat.Tests.Controllers
         [TestMethod]
         public async Task Should_return_list_of_messages()
         {
-            var message = new Messages("Hello world one", "test@teste.com.br", "teste2@teste.com");
-            var messageTwo = new Messages("Hello world two", "test2@teste.com.br","teste@teste.com");
+            var message = new Messages() 
+            { 
+                Message = "Hello world one", Sender = "test@teste.com.br",  Consumer = "teste2@teste.com" ,
+                Date = DateTime.Now
+            };
+
+            var messageTwo = new Messages()
+            {
+                Message = "Hello world Two",
+                Sender = "test@teste.com.br",
+                Consumer = "teste2@teste.com",
+                Date = DateTime.Now
+            };
 
             _userRepository.Add(message);
             _userRepository.Add(messageTwo);

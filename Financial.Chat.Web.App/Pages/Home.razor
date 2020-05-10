@@ -1,5 +1,5 @@
 ﻿@using Financial.Chat.Domain.Shared.Entity;
-@inject IJSRuntime JSRuntime;
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
 @using Chat.Web.App.Data;
 @using Microsoft.AspNetCore.SignalR.Client;
 @inject NavigationManager UriHelper;
@@ -8,6 +8,7 @@
 <nav class="nav navbar-default">
     <div class="navbar-brand">
         <span>Logged: @sender</span>
+        <button type="button" class="btn btn-block btn-secondary" @onclick="DoLogOut">Logout</button>
     </div>
 </nav>
 <br />
@@ -67,35 +68,70 @@
 
     protected async override Task OnInitializedAsync()
     {
-        sender = await GetEmailAsync();
-        new System.Threading.Timer(GetLoggedUser, null, TimeSpan.Zero, TimeSpan.FromSeconds(20));
+        sender = await GetEmailAsync(sender);
 
         hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:44367/chatHub?email=" + sender)
+            .WithUrl("https://localhost:5001/chatHub?email=" + sender, (opts) => 
+            {
+                opts.HttpMessageHandlerFactory = (message) =>
+                {
+                    if (message is HttpClientHandler clientHandler)
+                        // bypass SSL certificate
+                        clientHandler.ServerCertificateCustomValidationCallback +=
+                            (sender, certificate, chain, sslPolicyErrors) => { return true; };
+                    return message;
+                };
+            })
             .WithAutomaticReconnect()
             .Build();
 
         hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
             messages.Insert(0, new MessageDto { Sender = user, Message = message });
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
 
-        var token = await GetTokenAsync();
-        users = await new ChatService().GetUser(token);
-        messages = await new ChatService().GetUseMessages(token, sender);
+        await GetTokenAsync();
     }
 
-    private async Task<string> GetTokenAsync()
+    private async Task<string> GetTokenAsync(string token = null)
     {
-        return await JSRuntime.InvokeAsync<string>("wasmHelper.getAccessToken");
+        try
+        {
+            token = await LocalStore.GetItemAsync<string>("token");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                users = await new ChatService().GetUser(token);
+                messages = await new ChatService().GetUseMessages(token, sender);
+            }
+            return token;
+        }
+        catch
+        {
+            return token;
+        }
     }
 
-    private async Task<string> GetEmailAsync()
+    private async Task<string> GetEmailAsync(string sender = null)
     {
-        return await JSRuntime.InvokeAsync<string>("wasmHelper.getAccessEmail");
+        try
+        {
+            var email = await LocalStore.GetItemAsync<string>("email");
+            return email;
+        }
+        catch
+        {
+            return sender;
+        }
+    }
+
+    public async Task DoLogOut()
+    {
+        await LocalStore.ClearAsync();
+        UriHelper.NavigateTo("/login");
     }
 
     public async Task SendMessage()
@@ -119,16 +155,5 @@
         }
 
         await Task.CompletedTask;
-    }
-
-    public void GetLoggedUser(object state)
-    {
-        sender = Task.Run(async () => await GetEmailAsync()).Result;
-
-        var token = Task.Run(async () => await GetTokenAsync()).Result;
-        users = Task.Run(async () => await new ChatService().GetUser(token)).Result;
-        messages = Task.Run(async () => await new ChatService().GetUseMessages(token, sender)).Result;
-
-        Task.Run(async () => await InvokeAsync(StateHasChanged));
     }
 }

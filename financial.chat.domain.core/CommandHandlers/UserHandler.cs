@@ -5,9 +5,11 @@ using Financial.Chat.Domain.Core.Entity;
 using Financial.Chat.Domain.Core.Interfaces;
 using Financial.Chat.Domain.Core.Interfaces.Services;
 using Financial.Chat.Domain.Shared.Handler;
+using Financial.Chat.Domain.Shared.Helper;
 using Financial.Chat.Domain.Shared.Notifications;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,6 +37,12 @@ namespace Financial.Chat.Domain.Core.CommandHandlers
                 try
                 {
                     var user = _mapper.Map<User>(request);
+                    var userExisted = _userRepository.GetByExpression(x => x.Email == request.Email).FirstOrDefault();
+                    if (userExisted != null)
+                        throw new Exception("User alredy exist");
+
+                    user.Password = Cryptography.PasswordEncrypt(user.Password);
+
                     _userRepository.Add(user);
                     var success = _unitOfWork.Commit();
 
@@ -60,7 +68,7 @@ namespace Financial.Chat.Domain.Core.CommandHandlers
             {
                 try
                 {
-                    var message = new Messages(request.Message, request.Sender, request.Consumer);
+                    var message = _mapper.Map<Messages>(request);
                     _userRepository.Add(message);
                     var success = _unitOfWork.Commit();
 

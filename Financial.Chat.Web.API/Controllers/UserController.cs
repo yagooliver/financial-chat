@@ -77,9 +77,9 @@ namespace Financial.Chat.Web.API.Controllers
             if (bot.IsStockCall(messageAddCommand.Message))
             {
                 var msg = bot.CallServiceStock(messageAddCommand.Message.Substring(7, messageAddCommand.Message.Length - 7));
-                await _chatHub.Clients.Groups(messageAddCommand.Sender).SendAsync("ReceiveMessage", messageAddCommand.Sender, msg);
+                await _chatHub.Clients.Groups(messageAddCommand.Sender).SendAsync("ReceiveMessage", "Bot", msg);
                 if(!string.IsNullOrEmpty(messageAddCommand.Consumer))
-                    await _chatHub.Clients.Groups(messageAddCommand.Consumer).SendAsync("ReceiveMessage", messageAddCommand.Sender, msg);
+                    await _chatHub.Clients.Groups(messageAddCommand.Consumer).SendAsync("ReceiveMessage", "Bot", msg);
             }
             else
             {

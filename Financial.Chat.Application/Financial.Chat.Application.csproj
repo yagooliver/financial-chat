@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\financial.chat.domain.core\Financial.Chat.Domain.Core.csproj" />
+    <ProjectReference Include="..\Financial.Chat.Domain.Shared.Bot\Financial.Chat.Domain.Shared.Bot.csproj" />
   </ItemGroup>
 
 </Project>

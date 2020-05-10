@@ -10,6 +10,7 @@ namespace Financial.Chat.Application.AutoMapper
             return new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new UserMapper());
+                cfg.AddProfile(new MessageMapper());
             });
         }
     }

@@ -1,22 +1,24 @@
 ﻿using Financial.Chat.Domain.Shared.Entity;
+using Financial.Chat.Web.App.ViewModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Financial.Chat.Web.App.Data
 {
     public class ChatService
     {
+        private const string URL = "https://localhost:5001/";
         public async Task<List<UserDto>> GetUser(string token)
         {
-            using (HttpClient client = new HttpClient())
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            using (HttpClient client = new HttpClient(clientHandler))
             {
                 List<UserDto> users = new List<UserDto>();
-                client.BaseAddress = new Uri("https://localhost:44367/");
+                client.BaseAddress = new Uri(URL);
                 client.DefaultRequestHeaders.Accept.Clear();
                 //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
@@ -26,7 +28,7 @@ namespace Financial.Chat.Web.App.Data
                     var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
                     users = JsonConvert.DeserializeObject<List<UserDto>>(JsonConvert.SerializeObject(actionResult.data));
                 }
-                catch (Exception e)
+                catch
                 {
 
                 }
@@ -34,12 +36,45 @@ namespace Financial.Chat.Web.App.Data
                 return users;
             }
         }
+
+        public async Task<HttpResponseMessage> PostNewUser(NewUserViewModel model)
+        {
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            using (HttpClient client = new HttpClient(clientHandler))
+            {
+                client.BaseAddress = new Uri(URL);
+                client.DefaultRequestHeaders.Accept.Clear();
+                var content = new StringContent(content: JsonConvert.SerializeObject(model), encoding: System.Text.Encoding.UTF8, mediaType: "application/json");
+                var response = await client.PostAsync("api/user/signin", content);
+
+                return response;
+            }
+        }
+
+        public async Task<HttpResponseMessage> Login(string email, string password)
+        {
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            using (HttpClient client = new HttpClient(clientHandler))
+            {
+                client.BaseAddress = new Uri(URL);
+                client.DefaultRequestHeaders.Accept.Clear();
+                var content = new StringContent(content: JsonConvert.SerializeObject(new { email, password }), encoding: System.Text.Encoding.UTF8, mediaType: "application/json");
+                var response = await client.PostAsync("api/login", content);
+
+                return response;
+            }
+        }
+
         public async Task<List<MessageDto>> GetUseMessages(string token, string email)
         {
-            using (HttpClient client = new HttpClient())
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            using (HttpClient client = new HttpClient(clientHandler))
             {
                 List<MessageDto> messages = new List<MessageDto>();
-                client.BaseAddress = new Uri("https://localhost:44367/");
+                client.BaseAddress = new Uri(URL);
                 client.DefaultRequestHeaders.Accept.Clear();
                 //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
@@ -49,7 +84,7 @@ namespace Financial.Chat.Web.App.Data
                     var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
                     messages = JsonConvert.DeserializeObject<List<MessageDto>>(JsonConvert.SerializeObject(actionResult.data));
                 }
-                catch (Exception e)
+                catch 
                 {
 
                 }
@@ -59,10 +94,12 @@ namespace Financial.Chat.Web.App.Data
         }
         public async Task SendMessage(string token, string sender, string consumer, string message)
         {
-            using (HttpClient client = new HttpClient())
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            using (HttpClient client = new HttpClient(clientHandler))
             {
                 List<UserDto> users = new List<UserDto>();
-                client.BaseAddress = new Uri("https://localhost:44367/");
+                client.BaseAddress = new Uri(URL);
                 client.DefaultRequestHeaders.Accept.Clear();
                 //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var content = new StringContent(content: JsonConvert.SerializeObject(new { sender, consumer, message }), encoding: System.Text.Encoding.UTF8, mediaType: "application/json");

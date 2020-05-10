@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Financial.Chat.Application\Financial.Chat.Application.csproj" />
+    <ProjectReference Include="..\Financial.Chat.Domain.Shared.Bot\Financial.Chat.Domain.Shared.Bot.csproj" />
     <ProjectReference Include="..\Financial.Chat.Infra.Ioc\Financial.Chat.Infra.Ioc.csproj" />
   </ItemGroup>
 

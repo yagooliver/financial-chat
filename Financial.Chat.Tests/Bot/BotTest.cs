@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Financial.Chat.Domain.Shared.Bot;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Financial.Chat.Domain.Shared.Bot;
 
 namespace Financial.Chat.Tests.Bot
 {

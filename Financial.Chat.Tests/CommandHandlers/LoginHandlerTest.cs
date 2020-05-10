@@ -6,6 +6,7 @@ using Financial.Chat.Domain.Core.Entity;
 using Financial.Chat.Domain.Core.Interfaces;
 using Financial.Chat.Domain.Core.Interfaces.Services;
 using Financial.Chat.Domain.Shared.Handler;
+using Financial.Chat.Domain.Shared.Helper;
 using Financial.Chat.Domain.Shared.Notifications;
 using Financial.Chat.Infra.Data;
 using Financial.Chat.Infra.Data.Repositories;
@@ -46,9 +47,9 @@ namespace Financial.Chat.Tests.CommandHandlers
 
             _userRepository.Add(new User
             {
-                Email = "yago.oliveira.ce@live.com",
-                Name = "Yago",
-                Password = "123456"
+                Email = "test@test.com",
+                Name = "Test",
+                Password = Cryptography.PasswordEncrypt("123456")
             });
             _unitOfWork.Commit();
 
@@ -69,7 +70,7 @@ namespace Financial.Chat.Tests.CommandHandlers
         [TestMethod]
         public async Task Should_not_get_authenticated()
         {
-            var result = await handler.Handle(new AuthenticateUserCommand { Email = "test@test.com", Password = "123" }, CancellationToken.None);
+            var result = await handler.Handle(new AuthenticateUserCommand { Email = "test2@test.com", Password = "123356" }, CancellationToken.None);
 
             Assert.IsNull(result);
             Assert.IsTrue(_domainNotificationHandler.HasNotifications());
@@ -77,7 +78,7 @@ namespace Financial.Chat.Tests.CommandHandlers
         [TestMethod]
         public async Task Should_not_get_authenticated_invalid_email()
         {
-            var result = await handler.Handle(new AuthenticateUserCommand { Email = "test.com", Password = "123" }, CancellationToken.None);
+            var result = await handler.Handle(new AuthenticateUserCommand { Email = "test.com", Password = "123456" }, CancellationToken.None);
 
             Assert.IsNull(result);
             Assert.IsTrue(_domainNotificationHandler.HasNotifications());
@@ -86,7 +87,7 @@ namespace Financial.Chat.Tests.CommandHandlers
         [TestMethod]
         public async Task Should_get_authenticated()
         {
-            var result = await handler.Handle(new AuthenticateUserCommand { Email = "yago.oliveira.ce@live.com", Password = "123456" }, CancellationToken.None);
+            var result = await handler.Handle(new AuthenticateUserCommand { Email = "test@test.com", Password = "123456" }, CancellationToken.None);
 
             Assert.IsNotNull(result);
             Assert.IsFalse(_domainNotificationHandler.HasNotifications());

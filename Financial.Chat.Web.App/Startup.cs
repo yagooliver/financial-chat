@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Financial.Chat.Web.App.Data;
 using System.Net.Http;
+using Blazored.LocalStorage;
 
 namespace Financial.Chat.Web.App
 {
@@ -33,6 +34,7 @@ namespace Financial.Chat.Web.App
             services.AddServerSideBlazor();
 
             services.AddTransient(sp => new HttpClient());
+            services.AddBlazoredLocalStorage();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Financial.Chat.Application\Financial.Chat.Application.csproj" />
+    <ProjectReference Include="..\Financial.Chat.Domain.Shared.Bot\Financial.Chat.Domain.Shared.Bot.csproj" />
     <ProjectReference Include="..\Financial.Chat.Infra.Data\Financial.Chat.Infra.Data.csproj" />
     <ProjectReference Include="..\Financial.Chat.Web.API\Financial.Chat.Web.API.csproj" />
   </ItemGroup>

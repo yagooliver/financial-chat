@@ -25,10 +25,10 @@ namespace Financial.Chat.Domain.Shared.Bot
                 client.BaseAddress = new Uri(PREFIX);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                
+
                 HttpResponseMessage result = Task.Run(async () => await client.GetAsync(URI)).Result;
                 var objeto = Task.Run(async () => await result.Content.ReadAsStringAsync()).Result;
-                
+
                 return objeto;
             }
         }
