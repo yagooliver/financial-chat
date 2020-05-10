@@ -1,0 +1,72 @@
+﻿@inject NavigationManager UriHelper;
+@inject HttpClient Http
+@using Newtonsoft.Json;
+@using Financial.Chat.Domain.Shared.Entity;
+@using ViewModel;
+@page "/register"
+
+<h3>Register</h3>
+<div class="container">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" @bind="@name" />
+    </div>
+    <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="text" name="email" class="form-control" @bind="@email" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" @bind="@password" />
+    </div>
+    <div class="form-group">
+        <label for="second-password">Confirm password</label>
+        <input type="password" class="form-control" name="second-password" @bind="@secondPassword" />
+    </div>
+    <span class="text-danger">@loginErrorMessage</span>
+    <br>
+
+    <div>
+        <button class="btn btn-primary" @onclick="NewUser">Register</button>
+        <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </div>
+</div>
+
+@code {
+    string name = "";
+    string email = "";
+    string password = "";
+    string secondPassword = "";
+    string loginErrorMessage = "";
+
+    protected async Task NewUser()
+    {
+        var model = new NewUserViewModel
+        {
+            Email = email,
+            Password = password,
+            SecondPassword = secondPassword,
+            Name = name
+        };
+        var content = new StringContent(content: JsonConvert.SerializeObject(model), encoding: System.Text.Encoding.UTF8, mediaType: "application/json");
+        var response = (await Http.PostAsync("http://localhost:55677/api/user/signin", content));
+
+        try
+        {
+            var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
+
+            UriHelper.NavigateTo("Login");
+        }
+        catch
+        {
+            var actionResult = JsonConvert.DeserializeObject<ApiBadReturn>(await response.Content.ReadAsStringAsync());
+            loginErrorMessage = actionResult.errors.FirstOrDefault();
+        }
+    }
+
+    void Cancel()
+    {
+        UriHelper.NavigateTo("Login");
+    }
+}

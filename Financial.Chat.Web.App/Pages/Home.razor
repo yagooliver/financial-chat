@@ -1,0 +1,134 @@
+﻿@using Financial.Chat.Domain.Shared.Entity;
+@inject IJSRuntime JSRuntime;
+@using Chat.Web.App.Data;
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager UriHelper;
+@page "/home"
+
+<nav class="nav navbar-default">
+    <div class="navbar-brand">
+        <span>Logged: @sender</span>
+    </div>
+</nav>
+<br />
+<div class="clearfix"></div>
+
+<div class="container">
+    <div class="row">
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="users">Send to:</label>
+                <select @bind="@consumer" name="users" class="form-control">
+                    <option>Select user</option>
+                    @foreach (var item in users.Where(x => x.Email != sender))
+                    {
+                        <option value="@item.Email">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                MESSAGE: <input type="text" name="txtmsg" id="txtmsg" @bind="@message" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="button" value="send" class="btn btn-success" @onclick="SendMessage" name="btnsend" id="btnsend" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Messages
+                    </div>
+                    <div class="panel-footer" style="min-height:400px;">
+                        <div id="divmsg">
+                            @foreach (var message in messages.Take(50))
+                            {
+                                <span>@message.Sender: @message.Message</span>
+                                <br />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<UserDto> users = new List<UserDto>();
+    private HubConnection hubConnection;
+    public string consumer = "";
+    public string message = "";
+    public string sender = "";
+    private List<MessageDto> messages = new List<MessageDto>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        sender = await GetEmailAsync();
+        new System.Threading.Timer(GetLoggedUser, null, TimeSpan.Zero, TimeSpan.FromSeconds(20));
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:44367/chatHub?email=" + sender)
+            .WithAutomaticReconnect()
+            .Build();
+
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            messages.Insert(0, new MessageDto { Sender = user, Message = message });
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+
+        var token = await GetTokenAsync();
+        users = await new ChatService().GetUser(token);
+        messages = await new ChatService().GetUseMessages(token, sender);
+    }
+
+    private async Task<string> GetTokenAsync()
+    {
+        return await JSRuntime.InvokeAsync<string>("wasmHelper.getAccessToken");
+    }
+
+    private async Task<string> GetEmailAsync()
+    {
+        return await JSRuntime.InvokeAsync<string>("wasmHelper.getAccessEmail");
+    }
+
+    public async Task SendMessage()
+    {
+        try
+        {
+            var token = await GetTokenAsync();
+
+            messages.Insert(0, new MessageDto()
+            {
+                Sender = sender,
+                Message = message
+            });
+            await new ChatService().SendMessage(token, sender, consumer, message);
+
+            message = "";
+        }
+        catch
+        {
+            UriHelper.NavigateTo("/login");
+        }
+
+        await Task.CompletedTask;
+    }
+
+    public void GetLoggedUser(object state)
+    {
+        sender = Task.Run(async () => await GetEmailAsync()).Result;
+
+        var token = Task.Run(async () => await GetTokenAsync()).Result;
+        users = Task.Run(async () => await new ChatService().GetUser(token)).Result;
+        messages = Task.Run(async () => await new ChatService().GetUseMessages(token, sender)).Result;
+
+        Task.Run(async () => await InvokeAsync(StateHasChanged));
+    }
+}
