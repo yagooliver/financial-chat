@@ -38,7 +38,7 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 
 ## Instructions
 
-To test this application you just have to execute the "run-script.bat" on base directory of the project. This script will run the dotnet cli commands to run the application and automatically open chrome navigator(normal mode and incognito mode). After running the web api is accessed by https://localhost:44367/swagger and web app by https://localhost:5002
+To run this application you just have to execute the "run-script.bat" on base directory of the project. This script will run the dotnet cli commands to run the application and automatically open chrome navigator(normal mode and incognito mode). After running the web api is accessed by https://localhost:44367/swagger and web app by https://localhost:5002
 
 Also, you can run the solution open cmd on base directory and execute the following commands:
 
