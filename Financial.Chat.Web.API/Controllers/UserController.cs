@@ -78,13 +78,19 @@ namespace Financial.Chat.Web.API.Controllers
             {
                 var msg = bot.CallServiceStock(messageAddCommand.Message.Substring(7, messageAddCommand.Message.Length - 7));
                 await _chatHub.Clients.Groups(messageAddCommand.Sender).SendAsync("ReceiveMessage", "Bot", msg);
-                if(!string.IsNullOrEmpty(messageAddCommand.Consumer))
+                if(!string.IsNullOrEmpty(messageAddCommand.Consumer) && bot.VerifyResponse())
                     await _chatHub.Clients.Groups(messageAddCommand.Consumer).SendAsync("ReceiveMessage", "Bot", msg);
             }
             else
             {
                 await _mediator.SendCommandResult(messageAddCommand);
-                await _chatHub.Clients.Groups(messageAddCommand.Consumer).SendAsync("ReceiveMessage", messageAddCommand.Sender, messageAddCommand.Message);
+
+                if (!string.IsNullOrEmpty(messageAddCommand.Consumer))
+                {
+                    await _chatHub.Clients.Groups(messageAddCommand.Consumer).SendAsync("ReceiveMessage", messageAddCommand.Sender, messageAddCommand.Message);
+                }
+                else
+                    await _chatHub.Clients.Groups(messageAddCommand.Sender).SendAsync("ReceiveMessage", messageAddCommand.Sender, "Was not delivered. please, select an user");
             }
 
             return Response();
@@ -95,6 +101,9 @@ namespace Financial.Chat.Web.API.Controllers
         public async Task<IActionResult> Post([FromBody]UserAddCommand command)
         {
             var result = await _mediator.SendCommandResult(command);
+
+            if (result)
+                await _chatHub.Clients.All.SendAsync("NewUserRegistered", new UserDto { Email = command.Email, Name = command.Name });
 
             return Response(result);
         }

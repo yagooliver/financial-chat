@@ -29,8 +29,7 @@
 
     protected async Task DoLogin()
     {
-        //var content = new StringContent(content: JsonConvert.SerializeObject(new { email, password }), encoding: System.Text.Encoding.UTF8, mediaType: "application/json");
-        var response = await new ChatService().Login(email, password);//(await Http.PostAsync("http://localhost:5000/api/login", content));
+        var response = await new ChatService().Login(email, password);
         var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
         var token = JsonConvert.DeserializeObject<TokenJWT>(JsonConvert.SerializeObject(actionResult.data));
         if (token != null)

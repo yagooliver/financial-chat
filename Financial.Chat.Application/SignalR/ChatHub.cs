@@ -14,8 +14,11 @@ namespace Financial.Chat.Application.SignalR
         {
             var email = Context.GetHttpContext().Request.Query["email"];
 
-            if(users.Any(x => x.Value == email))
-                await Groups.RemoveFromGroupAsync(users.FirstOrDefault(x => x.Value == email).Key, users.FirstOrDefault(x => x.Value == email).Value);
+            //if (users.Any(x => x.Value == email))
+            //{
+            //    await Groups.RemoveFromGroupAsync(users.FirstOrDefault(x => x.Value == email).Key, users.FirstOrDefault(x => x.Value == email).Value);
+            //    users.Remove(Context.ConnectionId);
+            //}
 
             users.Add(Context.ConnectionId, email);
 
@@ -26,8 +29,11 @@ namespace Financial.Chat.Application.SignalR
 
         public async override Task OnDisconnectedAsync(Exception e)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, users[Context.ConnectionId]);
-            users.Remove(Context.ConnectionId);
+            //if (users.Any(x => x.Key == Context.ConnectionId))
+            //{
+            //    await Groups.RemoveFromGroupAsync(Context.ConnectionId, users[Context.ConnectionId]);
+            //    users.Remove(Context.ConnectionId);
+            //}
 
             await base.OnDisconnectedAsync(e);
         }

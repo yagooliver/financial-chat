@@ -53,8 +53,8 @@
             SecondPassword = secondPassword,
             Name = name
         };
-        //var content = new StringContent(content: JsonConvert.SerializeObject(model), encoding: System.Text.Encoding.UTF8, mediaType: "application/json");
-        var response = await new Chat.Web.App.Data.ChatService().PostNewUser(model);//(await Http.PostAsync("http://localhost:5000/api/user/signin", content));
+       
+        var response = await new Chat.Web.App.Data.ChatService().PostNewUser(model);
 
         try
         {

@@ -9,14 +9,17 @@ namespace Financial.Chat.Domain.Shared.Bot
     {
         private const string PREFIX = "https://stooq.com/q/l/?s=";
         private const string URL = ".us&f=sd2t2ohlcv&h&e=csv";
+        private string quote = "";
 
         public string CallServiceStock(string keyWord)
         {
             var url = $"{PREFIX}{keyWord}{URL}";
-            var quote = GetStockInformation(url).Split(',')[13];
-            var response = $"{keyWord} quote is ${quote} per share";
+            quote = GetStockInformation(url).Split(',')[13];
+            var response = VerifyResponse() ? $"{keyWord} quote is ${quote} per share" : $"Stock code \"{keyWord}\" not found";
             return response;
         }
+
+        public bool VerifyResponse() => !quote.Contains("N/D");
 
         private string GetStockInformation(string URI)
         {

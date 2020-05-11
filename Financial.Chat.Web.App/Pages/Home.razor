@@ -71,7 +71,7 @@
         sender = await GetEmailAsync(sender);
 
         hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:5001/chatHub?email=" + sender, (opts) => 
+            .WithUrl($"{new ChatService().GetURL()}chatHub?email=" + sender, (opts) =>
             {
                 opts.HttpMessageHandlerFactory = (message) =>
                 {
@@ -91,28 +91,49 @@
             InvokeAsync(StateHasChanged);
         });
 
+        hubConnection.On<UserDto>("NewUserRegistered", (userDto) =>
+        {
+            users.Insert(0, userDto);
+            InvokeAsync(StateHasChanged);
+        });
+
         await hubConnection.StartAsync();
 
-        await GetTokenAsync();
+        var token = await GetTokenAsync();
+
+        await GetObjectsAsync(token);
     }
 
-    private async Task<string> GetTokenAsync(string token = null)
+    private async Task<string> GetTokenAsync()
     {
         try
         {
-            token = await LocalStore.GetItemAsync<string>("token");
+            var token = await LocalStore.GetItemAsync<string>("token");
 
+            return token;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private async Task GetObjectsAsync(string token)
+    {
+        try
+        {
             if (!string.IsNullOrEmpty(token))
             {
                 users = await new ChatService().GetUser(token);
                 messages = await new ChatService().GetUseMessages(token, sender);
             }
-            return token;
         }
         catch
         {
-            return token;
+
         }
+
+        await Task.CompletedTask;
     }
 
     private async Task<string> GetEmailAsync(string sender = null)
@@ -140,11 +161,16 @@
         {
             var token = await GetTokenAsync();
 
-            messages.Insert(0, new MessageDto()
+            if (!new Financial.Chat.Domain.Shared.Bot.BotCall().IsStockCall(message))
             {
-                Sender = sender,
-                Message = message
-            });
+                messages.Insert(0, new MessageDto()
+                {
+                    Sender = sender,
+                    Message = message
+                });
+                await InvokeAsync(StateHasChanged);
+            }
+
             await new ChatService().SendMessage(token, sender, consumer, message);
 
             message = "";
