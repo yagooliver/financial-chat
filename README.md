@@ -7,12 +7,11 @@ What is the Financial chat Project?
 =====================
 Is a simple browser-based chat application using .NET core that use signalR to make the communication with logged users. Also, the user can make calls using the code "/stock=stock_code" to know the stock price.
 
+## Requirements
 
-## How to use:
 - You will need the latest Visual Studio 2019.
 - .NET Core SDK 3.1
 - The SDK and tools can be downloaded from https://dot.net/core.
-
 
 ## Technologies implemented:
 
@@ -39,3 +38,26 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 
 ## Instructions
 
+To test this application you just have to execute the "run-script.bat" on base directory of the project. This script will run the dotnet cli commands to run the application and automatically open chrome navigator(normal mode and incognito mode). After running the web api is accessed by https://localhost:44367/swagger and web app by https://localhost:5002
+
+Also, you can run the solution open cmd on base directory and execute the following commands:
+
+- dotnet clean
+- dotnet restore
+- dotnet build
+- dotnet tool install --global dotnet-ef
+- dotnet ef database update --startup-project .\Financial.Chat.Web.Api
+- start dotnet run --project .\Financial.Chat.Web.API
+- start dotnet run --project .\Financial.Chat.Web.App
+
+If you are running in visual studio, follow the steps bellow:
+- Run the command "update-database" on Package Manage console with default project Financial.Chat.Infra.Data seted
+to create the database
+- Start the Financial.Chat.Web.API
+- Start The Financial.Chat.Web.App
+
+## Observations
+- The Financial.Chat.Web.API must be running using https and port 44367
+- If web api have been executing in another port, you must change de url port on ChatService class in namespace Financial.Chat.Web.App.Data
+- Is necessary to open in two different browsers or in normal mode and other tab in incognito mode since the token for authentication is saved on localstorage for make the requests on Web API
+- Make sure that you are using the latest browser version (Chrome, Firefox, Microsoft Edge)
