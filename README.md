@@ -9,7 +9,7 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 
 ## Requirements
 
-- You will need the latest Visual Studio 2019.
+- You will need the Visual Studio 2019 Version 16.5.3 or High.
 - .NET Core SDK 3.1
 - The SDK and tools can be downloaded from https://dot.net/core.
 
