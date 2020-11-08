@@ -11,7 +11,7 @@ namespace Financial.Chat.Web.API.Controllers
 {
     [ApiController]
     [Route("api/login")]
-    [Authorize]
+    [AllowAnonymous]
     public class LoginController : ApiController
     {
         public LoginController(INotificationHandler<DomainNotification> notifications, IMediatorHandler mediator) : base(notifications, mediator)
@@ -32,6 +32,14 @@ namespace Financial.Chat.Web.API.Controllers
             }
 
             return Unauthorized();
+        }
+
+        [HttpGet]
+        [Route("Hello")]
+        [AllowAnonymous]
+        public IActionResult Get()
+        {
+            return Ok("Hello world");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Financial.Chat.Web.App.Data
 {
     public class ChatService
     {
-        private const string URL = "https://localhost:44367/";
+        private const string URL = "http://financialchat/";
 
         public string GetURL() => URL;
         public async Task<List<UserDto>> GetUser(string token)

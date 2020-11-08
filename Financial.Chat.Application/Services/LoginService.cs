@@ -34,13 +34,13 @@ namespace Financial.Chat.Application.Services
             if (string.IsNullOrWhiteSpace(email))
                 return null;
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("IZpipYfLNJro403p"));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
-                expires: DateTime.Now.AddMinutes(int.Parse(_config["Jwt:Duration"])),
+                issuer: "financialChat",//_config["Jwt:Issuer"],
+                audience: "financialChat",//_config["Jwt:Issuer"],
+                expires: DateTime.Now.AddMinutes(20),
                 signingCredentials: credentials);
 
             var encodetoken = new JwtSecurityTokenHandler().WriteToken(token);

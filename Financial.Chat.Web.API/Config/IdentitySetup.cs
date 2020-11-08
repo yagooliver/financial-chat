@@ -25,9 +25,9 @@ namespace Financial.Chat.Web.API.Configurations
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = configuration["Jwt:Issuer"],
-                        ValidAudience = configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                        ValidIssuer = "financialChat",//configuration["Jwt:Issuer"],
+                        ValidAudience = "financialChat",//configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("IZpipYfLNJro403p"))
                     };
                     options.Events = new JwtBearerEvents
                     {

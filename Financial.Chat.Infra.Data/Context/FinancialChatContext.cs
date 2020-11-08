@@ -22,12 +22,13 @@ namespace Financial.Chat.Infra.Data.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
+            // var config = new ConfigurationBuilder()
+            //      .SetBasePath(Directory.GetCurrentDirectory())
+            //      .AddJsonFile("appsettings.json")
+            //      .Build();
 
-            optionsBuilder.UseSqlServer(config.GetConnectionString("FinancialChatConnection"));
+            //optionsBuilder.UseSqlServer(config.GetConnectionString("FinancialChatConnection"));
+            optionsBuilder.UseSqlServer("Server=financial-db;Database=financial;User=sa;Password=dev@1234");
         }
     }
 }

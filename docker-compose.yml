@@ -1,0 +1,42 @@
+version: "3"
+services:
+    financialchat:
+        container_name: "financialchat"
+        build: .
+        environment: 
+            - ASPNETCORE_ENVIRONMENT=Development
+            - DB_CONNECTION_STRING=Server=financial-db;Database=financial;User=sa;Password=dev@1234
+        ports: 
+            - "8082:5001"
+        depends_on: 
+            - financial-db
+    web-app:
+        container_name: "financialchat-webapp"
+        build: 
+            context: .
+            dockerfile: ./App.Dockerfile
+        environment: 
+            - ASPNETCORE_ENVIRONMENT=Development
+        ports: 
+            - "8080:5002"
+        depends_on: 
+            - financial-db
+            - financialchat
+    financial-db:
+        image: "mcr.microsoft.com/mssql/server:2019-CU8-ubuntu-16.04"
+        container_name: "financial-db"
+        ports:
+            - "1435:1433"
+        volumes: 
+            - sqlsystem:/var/opt/mssql/
+            - sqldata:/var/opt/sqlserver/data
+            - sqllog:/var/opt/sqlserver/log
+            - sqlbackup:/var/opt/sqlserver/backup
+        environment:
+            SA_PASSWORD: "dev@1234"
+            ACCEPT_EULA: "Y"
+volumes:
+    sqlsystem:
+    sqldata:
+    sqllog:
+    sqlbackup:

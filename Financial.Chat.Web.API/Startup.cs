@@ -34,7 +34,8 @@ namespace Financial.Chat.Web.API
             });
 
             services.AddDbContext<FinancialChatContext>
-                (options => options.UseSqlServer(Configuration.GetConnectionString("FinancialChatConnection")));
+                //(options => options.UseSqlServer(Configuration.GetConnectionString("FinancialChatConnection")));
+                (options => options.UseSqlServer("Server=financial-db;Database=financial;User=sa;Password=dev@1234"));
 
             services.AddIdentitySetup(Configuration);
 
@@ -77,6 +78,8 @@ namespace Financial.Chat.Web.API
             app.UseCors("CorsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.EnsureMigrationOfContext<FinancialChatContext>();
 
             app.UseEndpoints(endpoints =>
             {
