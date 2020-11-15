@@ -9,9 +9,11 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 
 ## Requirements
 
-- You will need the Visual Studio 2019 Version 16.5.3 or High.
+- If you're running on visual studio you will need the Visual Studio 2019 Version 16.5.3 or High.
 - .NET Core SDK 3.1
 - The SDK and tools can be downloaded from https://dot.net/core.
+- Docker
+- Linux or Windows with Hyper-V enable
 
 ## Technologies implemented:
 
@@ -26,6 +28,7 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 - FluentValidator
 - MediatR
 - Swagger UI with JWT support
+- Docker
 
 ## Architecture:
 
@@ -36,7 +39,10 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 - Unit of Work
 - Repository and Generic Repository
 
-## Instructions
+## Instructions (using docker)
+To run this application you just have to execute the "docker-compose build" command on base directory of the project and then execute "docker-compose up -d". These commands wil run the application and automatically. After running the web api is accessed by http://localhost:8082/swagger and web app by http://localhost:8080
+
+## Instructions (deprecated, available on commit: a24eaf25fe1c26ed1be1147d691f44b7d72b1cd6)
 
 To run this application you just have to execute the "run-script.bat" on base directory of the project. This script will run the dotnet cli commands to run the application and automatically open chrome navigator(normal mode and incognito mode). After running the web api is accessed by https://localhost:44367/swagger and web app by https://localhost:5002
 
@@ -57,7 +63,7 @@ to create the database
 - Start The Financial.Chat.Web.App
 
 ## Observations
-- The Financial.Chat.Web.API must be running using https and port 44367
+- The Financial.Chat.Web.API must be running using https and port 8082 (old: 44367)
 - If web api have been executing in another port, you must change de url port on ChatService class in namespace Financial.Chat.Web.App.Data
 - Is necessary to open in two different browsers or in normal mode and other tab in incognito mode since the token for authentication is saved on localstorage for make the requests on Web API
 - Make sure that you are using the latest browser version (Chrome, Firefox, Microsoft Edge)
