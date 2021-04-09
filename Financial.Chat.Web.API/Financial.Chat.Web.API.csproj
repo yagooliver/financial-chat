@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="7.1.7" />
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.1.7" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.7" />
     <PackageReference Include="MediatR" Version="8.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.2.0" />
@@ -22,5 +25,6 @@
     <ProjectReference Include="..\Financial.Chat.Application\Financial.Chat.Application.csproj" />
     <ProjectReference Include="..\Financial.Chat.Domain.Shared.Bot\Financial.Chat.Domain.Shared.Bot.csproj" />
     <ProjectReference Include="..\Financial.Chat.Infra.Ioc\Financial.Chat.Infra.Ioc.csproj" />
+    <ProjectReference Include="..\Financial.Chat.Infra.MessageService\Financial.Chat.Infra.MessageService.csproj" />
   </ItemGroup>
 </Project>

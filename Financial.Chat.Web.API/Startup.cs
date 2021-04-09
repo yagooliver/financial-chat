@@ -1,6 +1,7 @@
 using Financial.Chat.Application.AutoMapper;
 using Financial.Chat.Infra.Data.Context;
 using Financial.Chat.Infra.Ioc;
+using Financial.Chat.Infra.MessageService;
 using Financial.Chat.Web.API.Config;
 using Financial.Chat.Web.API.Configurations;
 using MediatR;
@@ -34,8 +35,8 @@ namespace Financial.Chat.Web.API
             });
 
             services.AddDbContext<FinancialChatContext>
-                //(options => options.UseSqlServer(Configuration.GetConnectionString("FinancialChatConnection")));
-                (options => options.UseSqlServer("Server=financial-db;Database=financial;User=sa;Password=dev@1234"));
+                (options => options.UseSqlServer(Configuration.GetConnectionString("FinancialChatConnection")));
+                //(options => options.UseSqlServer("Server=localhost,1433;Database=financial;User=sa;Password=dev@1234"));
 
             services.AddIdentitySetup(Configuration);
 
@@ -47,9 +48,15 @@ namespace Financial.Chat.Web.API
 
             services.AddMvc();
 
+            services.AddHttpClient("FinancialChat", cfg => { cfg.Timeout = TimeSpan.FromSeconds(60); });
+
             services.AddHttpContextAccessor();
 
             services.AddMediatR(typeof(Startup));
+
+            services.AddMassTransitSetup();
+
+            services.AddHostedService<Worker>();
 
             DependencyInjectionResolver.RegisterServices(services);
 

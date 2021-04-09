@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Financial.Chat.Application.SignalR;
 using Financial.Chat.Domain.Core.Commands;
@@ -9,6 +10,7 @@ using Financial.Chat.Domain.Shared.Bot;
 using Financial.Chat.Domain.Shared.Entity;
 using Financial.Chat.Domain.Shared.Handler;
 using Financial.Chat.Domain.Shared.Notifications;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -84,14 +86,27 @@ namespace Financial.Chat.Web.API.Controllers
             else
             {
                 await _mediator.SendCommandResult(messageAddCommand);
-
-                if (!string.IsNullOrEmpty(messageAddCommand.Consumer))
-                {
-                    await _chatHub.Clients.Groups(messageAddCommand.Consumer).SendAsync("ReceiveMessage", messageAddCommand.Sender, messageAddCommand.Message);
-                }
-                else
-                    await _chatHub.Clients.Groups(messageAddCommand.Sender).SendAsync("ReceiveMessage", messageAddCommand.Sender, "Was not delivered. please, select an user");
             }
+
+            var bus = Bus.Factory.CreateUsingRabbitMq();
+            
+            await bus.StartAsync();
+
+            await bus.Publish(new MessageDto { Consumer = messageAddCommand.Consumer, Date = DateTime.Now, Message = messageAddCommand.Message, Sender = messageAddCommand.Sender });
+
+            return Response();
+        }
+
+        [HttpPost("receive")]
+        [Authorize]
+        public async Task<IActionResult> ReceiveMessage([FromBody] MessageDto message)
+        {
+            if (!string.IsNullOrEmpty(message.Consumer))
+            {
+                await _chatHub.Clients.Groups(message.Consumer).SendAsync("ReceiveMessage", message.Sender, message.Message);
+            }
+            else
+                await _chatHub.Clients.Groups(message.Sender).SendAsync("ReceiveMessage", message.Sender, "Was not delivered. please, select an user");
 
             return Response();
         }
