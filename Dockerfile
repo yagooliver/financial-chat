@@ -21,9 +21,9 @@ COPY ["./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj", "./Financial.Cha
 RUN dotnet restore "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj"
 COPY ./ .
 
-RUN dotnet build "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj" --packages ./.nuget/packages -c Release -o /app/build
+#RUN dotnet build "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj" --packages ./.nuget/packages -c Release -o /app/build
 
-RUN dotnet test
+#RUN dotnet test
 
 FROM build-env AS publish
 RUN dotnet publish "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj" -c Release -o /app/publish
