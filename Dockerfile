@@ -18,10 +18,10 @@ COPY ["./Financial.Chat.Infra.Bus/Financial.Chat.Infra.Bus.csproj", "./Financial
 COPY ["./Financial.Chat.Infra.Data/Financial.Chat.Infra.Data.csproj", "./Financial.Chat.Infra.Data/" ]
 COPY ["./Financial.Chat.Application/Financial.Chat.Application.csproj", "./Financial.Chat.Application/" ]
 COPY ["./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj", "./Financial.Chat.Web.API/" ]
-RUN dotnet restore "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj"
+#RUN dotnet restore "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj"
 COPY ./ .
 
-RUN dotnet build "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj" --packages ./.nuget/packages -c Release -o /app/build
+RUN dotnet build "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj" -c Release -o /app/build
 
 RUN dotnet test
 
