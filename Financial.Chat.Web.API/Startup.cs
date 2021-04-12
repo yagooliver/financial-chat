@@ -1,7 +1,6 @@
 using Financial.Chat.Application.AutoMapper;
 using Financial.Chat.Infra.Data.Context;
 using Financial.Chat.Infra.Ioc;
-using Financial.Chat.Infra.MessageService;
 using Financial.Chat.Web.API.Config;
 using Financial.Chat.Web.API.Configurations;
 using MediatR;

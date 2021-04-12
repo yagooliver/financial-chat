@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 5002/tcp
 
@@ -7,7 +7,7 @@ RUN apk add libgdiplus --update-cache --repository http://dl-3.alpinelinux.org/a
     apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:5.0-alpine AS build-env
 COPY ["./FinancialChat.sln", "./"]
 COPY ["./Financial.Chat.Domain.Shared.Bot/Financial.Chat.Domain.Shared.Bot.csproj", "./Financial.Chat.Domain.Shared.Bot/" ]
 COPY ["./Financial.Chat.Domain.Shared/Financial.Chat.Domain.Shared.csproj", "./Financial.Chat.Domain.Shared/" ]

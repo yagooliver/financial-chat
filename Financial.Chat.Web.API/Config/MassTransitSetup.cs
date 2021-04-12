@@ -2,7 +2,6 @@
 using System;
 using MassTransit;
 using GreenPipes;
-using Financial.Chat.Infra.MessageService;
 
 namespace Financial.Chat.Web.API.Config
 {
@@ -28,8 +27,8 @@ namespace Financial.Chat.Web.API.Config
 
                     cfg.ReceiveEndpoint("message_chat", e =>
                     {
-                        var retryIntervals = TimeSpanExtensions.GetIntervalsFromString("1m, 5m, 30m, 1h, 6h, 12h, 1d");
-                        e.UseScheduledRedelivery(r => r.Intervals(retryIntervals));
+                        //var retryIntervals = TimeSpanExtensions.GetIntervalsFromString("1m, 5m, 30m, 1h, 6h, 12h, 1d");
+                        //e.UseScheduledRedelivery(r => r.Intervals(retryIntervals));
                         e.DiscardFaultedMessages();
 
                         e.ConfigureConsumer<Consumer.MessageConsumer>(context);

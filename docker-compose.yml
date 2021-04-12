@@ -1,9 +1,8 @@
 version: "3"
 services:
-    rabbitmq:
+    rabbitmq-service:
         image: rabbitmq:3-management
         container_name: rabbitmq-service
-        hostname: local-rabbitmq
         ports:
             - 15672:15672
             - 5672:5672
@@ -17,7 +16,7 @@ services:
             - "8082:5001"
         depends_on: 
             - financial-db
-            - rabbitmq
+            - rabbitmq-service
     web-app:
         container_name: "financialchat-webapp"
         build: 

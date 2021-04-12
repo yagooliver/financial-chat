@@ -10,40 +10,40 @@ namespace Financial.Chat.Web.App.Data
 {
     public class ChatService
     {
-        private const string URL = "http://financialchat:5001/";
+        private const string URL = "http://localhost:55677/";
 
         public string GetURL() => URL;
         public async Task<List<UserDto>> GetUser(string token)
         {
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-            using (HttpClient client = new HttpClient(clientHandler))
+            using HttpClient client = new(clientHandler);
+            List<UserDto> users = new();
+            client.BaseAddress = new Uri(URL);
+            client.DefaultRequestHeaders.Accept.Clear();
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            var response = await client.GetAsync("api/user");
+            try
             {
-                List<UserDto> users = new List<UserDto>();
-                client.BaseAddress = new Uri(URL);
-                client.DefaultRequestHeaders.Accept.Clear();
-                //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-                var response = await client.GetAsync("api/user");
-                try
-                {
-                    var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
-                    users = JsonConvert.DeserializeObject<List<UserDto>>(JsonConvert.SerializeObject(actionResult.data));
-                }
-                catch
-                {
-
-                }
-
-                return users;
+                var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
+                users = JsonConvert.DeserializeObject<List<UserDto>>(JsonConvert.SerializeObject(actionResult.data));
             }
+            catch
+            {
+
+            }
+
+            return users;
         }
 
         public async Task<HttpResponseMessage> PostNewUser(NewUserViewModel model)
         {
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-            using (HttpClient client = new HttpClient(clientHandler))
+            HttpClientHandler clientHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+            };
+            using (HttpClient client = new(clientHandler))
             {
                 client.BaseAddress = new Uri(URL);
                 client.DefaultRequestHeaders.Accept.Clear();

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 5001/tcp
 
@@ -8,7 +8,7 @@ RUN apk add libgdiplus --update-cache --repository http://dl-3.alpinelinux.org/a
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false
 #ENV ConnectionStrings:FinancialChatConnection="server=financial-db;database=financial;user=sa;password=dev@1234;convert zero datetime=True;"s
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:5.0-alpine AS build-env
 COPY ["./FinancialChat.sln", "./"]
 COPY ["./Financial.Chat.Domain.Shared.Bot/Financial.Chat.Domain.Shared.Bot.csproj", "./Financial.Chat.Domain.Shared.Bot/" ]
 COPY ["./Financial.Chat.Domain.Shared/Financial.Chat.Domain.Shared.csproj", "./Financial.Chat.Domain.Shared/" ]
