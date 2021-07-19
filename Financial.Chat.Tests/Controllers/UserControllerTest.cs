@@ -48,6 +48,7 @@ namespace Financial.Chat.Tests.Controllers
             {
                 _domainNotificationHandler.Handle(x, CancellationToken.None);
             });
+            _mockQueue = new Mock<IQueueMessageService>();
             _mockQueue.Setup(x => x.SendMessageAsync(It.IsAny<MessageDto>())).Returns(Task.CompletedTask);
 
             _mapper = AutoMapperConfig.RegisterMappings().CreateMapper();
