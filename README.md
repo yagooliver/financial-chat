@@ -17,12 +17,13 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 
 ## Technologies implemented:
 
-- ASP.NET Core 3.1
+- ASP.NET Core 5.0
 - ASP.NET WebApi Core with JWT Bearer Authentication
 - ASP.NET Identity Core
 - ASP.NET CORE SIGNALR
+- WORKER
 - BLAZOR
-- Entity Framework Core 3.1
+- Entity Framework Core 5.0
 - .NET Core Native DI
 - AutoMapper
 - FluentValidator
@@ -44,7 +45,7 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 ## Instructions (using docker)
 To run this application you just have to execute the "docker-compose build" command on base directory of the project and then execute "docker-compose up -d". These commands wil run the application and automatically. After running the web api is accessed by http://localhost:8082/swagger and web app by http://localhost:8080
 
-## Instructions (deprecated, available on commit: a24eaf25fe1c26ed1be1147d691f44b7d72b1cd6)
+## Other instructions
 
 To run this application you just have to execute the "run-script.bat" on base directory of the project. This script will run the dotnet cli commands to run the application and automatically open chrome navigator(normal mode and incognito mode). After running the web api is accessed by https://localhost:44367/swagger and web app by https://localhost:5002
 
@@ -57,12 +58,17 @@ Also, you can run the solution open cmd on base directory and execute the follow
 - dotnet ef database update --startup-project .\Financial.Chat.Web.Api
 - start dotnet run --project .\Financial.Chat.Web.API
 - start dotnet run --project .\Financial.Chat.Web.App
+- start dotnet run --project .\FinancialChat.MessageBroker
+
+OBS: In this case, you may have to change the links in the class ChatService(Financial.Chat.Web.App) and appsettings.Development(FinancialChat.MessageBroker).
+Because the API starts using 5001 port and you have to install the rabbitmq in your machine, you also can use docker for that.
 
 If you are running in visual studio, follow the steps bellow:
 - Run the command "update-database" on Package Manage console with default project Financial.Chat.Infra.Data seted
 to create the database
 - Start the Financial.Chat.Web.API
 - Start The Financial.Chat.Web.App
+- Start The FinancialChat.MessageBroker
 
 ## Observations
 - The Financial.Chat.Web.API must be running using https and port 8082 (old: 44367)
