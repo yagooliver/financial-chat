@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:5.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine3.13-amd64 AS base
 WORKDIR /app
 EXPOSE 5001/tcp
 
@@ -6,9 +6,10 @@ RUN apk add libgdiplus --update-cache --repository http://dl-3.alpinelinux.org/a
     apk add terminus-font && \
     apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false
+ENV ASPNETCORE_ENVIRONMENT=Production
 #ENV ConnectionStrings:FinancialChatConnection="server=financial-db;database=financial;user=sa;password=dev@1234;convert zero datetime=True;"s
 
-FROM mcr.microsoft.com/dotnet/core/sdk:5.0-alpine AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine3.13-amd64 AS build-env
 COPY ["./FinancialChat.sln", "./"]
 COPY ["./Financial.Chat.Domain.Shared.Bot/Financial.Chat.Domain.Shared.Bot.csproj", "./Financial.Chat.Domain.Shared.Bot/" ]
 COPY ["./Financial.Chat.Domain.Shared/Financial.Chat.Domain.Shared.csproj", "./Financial.Chat.Domain.Shared/" ]
@@ -18,6 +19,7 @@ COPY ["./Financial.Chat.Infra.Bus/Financial.Chat.Infra.Bus.csproj", "./Financial
 COPY ["./Financial.Chat.Infra.Data/Financial.Chat.Infra.Data.csproj", "./Financial.Chat.Infra.Data/" ]
 COPY ["./Financial.Chat.Application/Financial.Chat.Application.csproj", "./Financial.Chat.Application/" ]
 COPY ["./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj", "./Financial.Chat.Web.API/" ]
+COPY ["./Financial.Chat.Infra.Identity/Financial.Chat.Infra.Identity.csproj", "./Financial.Chat.Infra.Identity/"]
 #RUN dotnet restore "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj"
 COPY ./ .
 
@@ -26,7 +28,7 @@ COPY ./ .
 #RUN dotnet test
 
 FROM build-env AS publish
-RUN dotnet publish "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "./Financial.Chat.Web.API/Financial.Chat.Web.API.csproj" -c Production -o /app/publish
 
 
 FROM base AS final

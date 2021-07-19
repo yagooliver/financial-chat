@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Configurations>Debug;Release;Production</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Financial.Chat.Application\Financial.Chat.Application.csproj" />
     <ProjectReference Include="..\Financial.Chat.Domain.Shared.Bot\Financial.Chat.Domain.Shared.Bot.csproj" />
+    <ProjectReference Include="..\Financial.Chat.Infra.Identity\Financial.Chat.Infra.Identity.csproj" />
     <ProjectReference Include="..\Financial.Chat.Infra.Ioc\Financial.Chat.Infra.Ioc.csproj" />
   </ItemGroup>
 </Project>

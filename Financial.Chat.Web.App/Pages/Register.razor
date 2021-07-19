@@ -53,20 +53,29 @@
             SecondPassword = secondPassword,
             Name = name
         };
-       
+
         var response = await new Chat.Web.App.Data.ChatService().PostNewUser(model);
 
         try
         {
-            var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
-            if (actionResult.success)
+            if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
             {
-                UriHelper.NavigateTo("Login");
+                errors.Add("Internal error");
+
+                await Task.CompletedTask;
             }
-            else
+            else 
             {
-                var result = JsonConvert.DeserializeObject<ApiBadReturn>(await response.Content.ReadAsStringAsync());
-                errors = result.errors.ToList();
+                var actionResult = JsonConvert.DeserializeObject<ApiOkReturn>(await response.Content.ReadAsStringAsync());
+                if (actionResult.success)
+                {
+                    UriHelper.NavigateTo("Login");
+                }
+                else
+                {
+                    var result = JsonConvert.DeserializeObject<ApiBadReturn>(await response.Content.ReadAsStringAsync());
+                    errors = result.errors.ToList();
+                }
             }
         }
         catch

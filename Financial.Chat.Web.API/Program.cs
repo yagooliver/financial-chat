@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Financial.Chat.Web.API
 {
@@ -9,28 +9,27 @@ namespace Financial.Chat.Web.API
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .ConfigureAppConfiguration((hostingContext, config) => {
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            CreateHostBuilder(args).Build().Run();
+        }
 
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    Console.WriteLine($"{hostingContext.HostingEnvironment.EnvironmentName}");
+                    config.AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true);
+                    config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
                     config.AddEnvironmentVariables();
 
-                    if(args != null){
+                    if (args != null)
                         config.AddCommandLine(args);
-                    }
                 })
-                .UseUrls("http://*:80")
-                .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
-        }
-        // public static IHostBuilder CreateHostBuilder(string[] args) =>
-        //     Host.CreateDefaultBuilder(args)
-        //         .ConfigureWebHostDefaults(webBuilder =>
-        //         {
-        //             webBuilder.UseStartup<Startup>();
-        //         });
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+#if !DEBUG
+                    webBuilder.UseUrls("http://*:5001");
+#endif
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

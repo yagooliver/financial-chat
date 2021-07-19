@@ -1,4 +1,5 @@
-﻿using Financial.Chat.Application.Services;
+﻿using Financial.Chat.Application.Interfaces;
+using Financial.Chat.Application.Services;
 using Financial.Chat.Domain.Core.CommandHandlers;
 using Financial.Chat.Domain.Core.Commands;
 using Financial.Chat.Domain.Core.Commands.Message;
@@ -34,7 +35,7 @@ namespace Financial.Chat.Infra.Ioc
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginService, LoginService>();
-
+            services.AddScoped<IQueueMessageService, QueueMessageService>();
             services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
         }
     }

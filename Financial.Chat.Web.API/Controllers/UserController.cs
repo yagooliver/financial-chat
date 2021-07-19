@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Financial.Chat.Application.Interfaces;
 using Financial.Chat.Application.SignalR;
 using Financial.Chat.Domain.Core.Commands;
 using Financial.Chat.Domain.Core.Commands.Message;
@@ -25,10 +26,12 @@ namespace Financial.Chat.Web.API.Controllers
     {
         private IUserService _userService;
         private IHubContext<ChatHub> _chatHub;
-        public UserController(IUserService userService, IHubContext<ChatHub> chatHub, INotificationHandler<DomainNotification> notifications, IMediatorHandler mediator) : base(notifications, mediator)
+        private IQueueMessageService _queueMessageService;
+        public UserController(IUserService userService, IHubContext<ChatHub> chatHub, IQueueMessageService queueMessageService, INotificationHandler<DomainNotification> notifications, IMediatorHandler mediator) : base(notifications, mediator)
         {
             _userService = userService;
             _chatHub = chatHub;
+            _queueMessageService = queueMessageService;
         }
 
         [HttpGet]
@@ -75,24 +78,18 @@ namespace Financial.Chat.Web.API.Controllers
         [Authorize]
         public async Task<IActionResult> SendMessage([FromBody]MessageAddCommand messageAddCommand)
         {
-            var bot = new BotCall();
-            if (bot.IsStockCall(messageAddCommand.Message))
+            if (!string.IsNullOrEmpty(messageAddCommand.Consumer))
             {
-                var msg = bot.CallServiceStock(messageAddCommand.Message.Substring(7, messageAddCommand.Message.Length - 7));
-                await _chatHub.Clients.Groups(messageAddCommand.Sender).SendAsync("ReceiveMessage", "Bot", msg);
-                if(!string.IsNullOrEmpty(messageAddCommand.Consumer) && bot.VerifyResponse())
-                    await _chatHub.Clients.Groups(messageAddCommand.Consumer).SendAsync("ReceiveMessage", "Bot", msg);
+                await _queueMessageService.SendMessageAsync(new MessageDto
+                {
+                    Consumer = messageAddCommand.Consumer,
+                    Date = DateTime.Now,
+                    Message = messageAddCommand.Message,
+                    Sender = messageAddCommand.Sender
+                });
             }
             else
-            {
-                await _mediator.SendCommandResult(messageAddCommand);
-            }
-
-            var bus = Bus.Factory.CreateUsingRabbitMq();
-            
-            await bus.StartAsync();
-
-            await bus.Publish(new MessageDto { Consumer = messageAddCommand.Consumer, Date = DateTime.Now, Message = messageAddCommand.Message, Sender = messageAddCommand.Sender });
+                await _chatHub.Clients.Groups(messageAddCommand.Sender).SendAsync("ReceiveMessage", messageAddCommand.Sender, "Was not delivered. please, select an user");
 
             return Response();
         }
@@ -101,14 +98,26 @@ namespace Financial.Chat.Web.API.Controllers
         [Authorize]
         public async Task<IActionResult> ReceiveMessage([FromBody] MessageDto message)
         {
-            if (!string.IsNullOrEmpty(message.Consumer))
+            var bot = new BotCall();
+            if (bot.IsStockCall(message.Message))
             {
-                await _chatHub.Clients.Groups(message.Consumer).SendAsync("ReceiveMessage", message.Sender, message.Message);
+                var msg = bot.CallServiceStock(message.Message.Substring(7, message.Message.Length - 7));
+                await _chatHub.Clients.Groups(message.Sender).SendAsync("ReceiveMessage", "Bot", msg);
+                if (!string.IsNullOrEmpty(message.Consumer) && bot.VerifyResponse())
+                    await _chatHub.Clients.Groups(message.Consumer).SendAsync("ReceiveMessage", "Bot", msg);
             }
             else
-                await _chatHub.Clients.Groups(message.Sender).SendAsync("ReceiveMessage", message.Sender, "Was not delivered. please, select an user");
+            {
+                await _mediator.SendCommandResult(new MessageAddCommand { Consumer = message.Consumer, Message = message.Message, Sender = message.Sender });
 
-            return Response();
+                if (!string.IsNullOrEmpty(message.Consumer))
+                {
+                    await _chatHub.Clients.Groups(message.Consumer).SendAsync("ReceiveMessage", message.Sender, message.Message);
+                }
+                else
+                    await _chatHub.Clients.Groups(message.Sender).SendAsync("ReceiveMessage", message.Sender, "Was not delivered. please, select an user");
+            }
+            return Response(true);
         }
 
         [HttpPost("signin")]

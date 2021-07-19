@@ -1,17 +1,17 @@
-﻿
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Financial.Chat.Web.API.Configurations
+namespace Financial.Chat.Infra.Identity.Config
 {
     public static class IdentitySetup
     {
-
         public static void AddIdentitySetup(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -25,9 +25,9 @@ namespace Financial.Chat.Web.API.Configurations
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = "financialChat",//configuration["Jwt:Issuer"],
-                        ValidAudience = "financialChat",//configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("IZpipYfLNJro403p"))
+                        ValidIssuer = configuration["Jwt:Issuer"],
+                        ValidAudience = configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     };
                     options.Events = new JwtBearerEvents
                     {

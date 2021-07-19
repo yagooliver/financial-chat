@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Financial.Chat.Application.AutoMapper;
+using Financial.Chat.Application.Interfaces;
 using Financial.Chat.Application.Services;
 using Financial.Chat.Application.SignalR;
 using Financial.Chat.Domain.Core.Entity;
@@ -28,6 +29,7 @@ namespace Financial.Chat.Tests.Controllers
         private IUnitOfWork _unitOfWork;
         private Mock<IMediatorHandler> _mockMediator;
         private Mock<IHubContext<ChatHub>> _mockChat;
+        private Mock<IQueueMessageService> _mockQueue;
         private IUserRepository _userRepository;
         private DomainNotificationHandler _domainNotificationHandler;
         private IMapper _mapper;
@@ -46,13 +48,14 @@ namespace Financial.Chat.Tests.Controllers
             {
                 _domainNotificationHandler.Handle(x, CancellationToken.None);
             });
+            _mockQueue.Setup(x => x.SendMessageAsync(It.IsAny<MessageDto>())).Returns(Task.CompletedTask);
 
             _mapper = AutoMapperConfig.RegisterMappings().CreateMapper();
         }
         [TestMethod]
         public async Task Should_not_return_list_of_users()
         {
-            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _domainNotificationHandler, _mockMediator.Object);
+            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _mockQueue.Object, _domainNotificationHandler, _mockMediator.Object); ;
 
             var result = (await _controller.Get() as OkObjectResult).Value as ApiOkReturn;
             var list = result.data as List<UserDto>;
@@ -79,7 +82,7 @@ namespace Financial.Chat.Tests.Controllers
             _userRepository.Add(userTwo);
             _unitOfWork.Commit();
 
-            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _domainNotificationHandler, _mockMediator.Object);
+            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _mockQueue.Object, _domainNotificationHandler, _mockMediator.Object);
 
             var result = (await _controller.Get() as OkObjectResult).Value as ApiOkReturn;
             var list = result.data as List<UserDto>;
@@ -90,7 +93,7 @@ namespace Financial.Chat.Tests.Controllers
         [TestMethod]
         public async Task Should_not_return_a_user()
         {
-            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _domainNotificationHandler, _mockMediator.Object);
+            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _mockQueue.Object, _domainNotificationHandler, _mockMediator.Object);
 
             var result = (await _controller.Get(Guid.NewGuid()) as OkObjectResult).Value as ApiOkReturn;
             var user = (UserDto)result.data;
@@ -117,7 +120,7 @@ namespace Financial.Chat.Tests.Controllers
             _userRepository.Add(userTwo);
             _unitOfWork.Commit();
 
-            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _domainNotificationHandler, _mockMediator.Object);
+            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _mockQueue.Object, _domainNotificationHandler, _mockMediator.Object);
 
             var result = (await _controller.Get(user.Id) as OkObjectResult).Value as ApiOkReturn;
             var getUser = (UserDto)result.data;
@@ -129,7 +132,7 @@ namespace Financial.Chat.Tests.Controllers
         [TestMethod]
         public async Task Should_not_return_list_of_messages()
         {
-            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _domainNotificationHandler, _mockMediator.Object);
+            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _mockQueue.Object, _domainNotificationHandler, _mockMediator.Object);
 
             var result = (await _controller.GetMessages() as OkObjectResult).Value as ApiOkReturn;
             var list = result.data as List<Messages>;
@@ -157,7 +160,7 @@ namespace Financial.Chat.Tests.Controllers
             _userRepository.Add(messageTwo);
             _unitOfWork.Commit();
 
-            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _domainNotificationHandler, _mockMediator.Object);
+            _controller = new UserController(new UserService(_userRepository, _mapper), _mockChat.Object, _mockQueue.Object, _domainNotificationHandler, _mockMediator.Object);
 
             var result = (await _controller.GetMessages() as OkObjectResult).Value as ApiOkReturn;
             var list = result.data as List<Messages>;

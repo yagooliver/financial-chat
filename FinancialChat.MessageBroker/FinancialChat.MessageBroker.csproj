@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>dotnet-FinancialChat.MessageBroker-BF12A5E3-66B1-4F6B-9939-BE47DD82CCC8</UserSecretsId>
+    <Configurations>Debug;Release;Production</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit" Version="7.2.1" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.2.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Polly" Version="7.2.2" />
+    <PackageReference Include="Refit" Version="6.0.38" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Financial.Chat.Domain.Shared\Financial.Chat.Domain.Shared.csproj" />
+    <ProjectReference Include="..\Financial.Chat.Infra.Identity\Financial.Chat.Infra.Identity.csproj" />
+  </ItemGroup>
+</Project>

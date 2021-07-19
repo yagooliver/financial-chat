@@ -13,6 +13,7 @@ namespace Financial.Chat.Web.App
 {
     public class Program
     {
+#if !DEBUG
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
@@ -23,12 +24,17 @@ namespace Financial.Chat.Web.App
 
             host.Run();
         }
-
-        // public static IHostBuilder CreateHostBuilder(string[] args) =>
-        //     Host.CreateDefaultBuilder(args)
-        //         .ConfigureWebHostDefaults(webBuilder =>
-        //         {
-        //             webBuilder.UseStartup<Startup>();
-        //         });
+#else
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+#endif
     }
 }

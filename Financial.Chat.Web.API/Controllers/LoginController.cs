@@ -6,6 +6,8 @@ using MediatR;
 using Financial.Chat.Domain.Shared.Notifications;
 using Financial.Chat.Domain.Shared.Handler;
 using Microsoft.AspNetCore.Authorization;
+using Financial.Chat.Domain.Shared.Entity;
+using Microsoft.AspNetCore.Http;
 
 namespace Financial.Chat.Web.API.Controllers
 {
@@ -19,6 +21,21 @@ namespace Financial.Chat.Web.API.Controllers
             
         }
 
+        /// <summary>
+        /// User's Login
+        /// </summary>
+        /// <remarks>
+        /// POST /login
+        /// {
+        ///     "email": "test@test.com",
+        ///     "password": "password"
+        /// }
+        /// </remarks>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(ApiOkReturn))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> LoginAsync(AuthenticateUserCommand command)
@@ -32,14 +49,6 @@ namespace Financial.Chat.Web.API.Controllers
             }
 
             return Unauthorized();
-        }
-
-        [HttpGet]
-        [Route("Hello")]
-        [AllowAnonymous]
-        public IActionResult Get()
-        {
-            return Ok("Hello world");
         }
     }
 }

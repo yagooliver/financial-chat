@@ -29,6 +29,8 @@ Is a simple browser-based chat application using .NET core that use signalR to m
 - MediatR
 - Swagger UI with JWT support
 - Docker
+- RabbitMQ
+- MassTransit
 
 ## Architecture:
 

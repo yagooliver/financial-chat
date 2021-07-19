@@ -12,6 +12,8 @@ start dotnet run --project .\Financial.Chat.Web.API
 
 start dotnet run --project .\Financial.Chat.Web.App
 
+start dotnet run --project .\FinancialChat.MessageBroker
+
 echo "Chrome will start in"
 
 timeout 10

@@ -22,10 +22,14 @@ namespace Financial.Chat.Infra.Data.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-             var config = new ConfigurationBuilder()
-                  .SetBasePath(Directory.GetCurrentDirectory())
-                  .AddJsonFile("appsettings.json")
-                  .Build();
+            var config = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
+#if DEBUG
+                 .AddJsonFile($"appsettings.Development.json")
+#else
+                 .AddJsonFile($"appsettings.Production.json")
+#endif
+                 .Build();
 
             optionsBuilder.UseSqlServer(config.GetConnectionString("FinancialChatConnection"));
         }

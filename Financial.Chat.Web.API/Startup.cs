@@ -1,8 +1,9 @@
 using Financial.Chat.Application.AutoMapper;
+using Financial.Chat.Domain.Shared.Entity;
 using Financial.Chat.Infra.Data.Context;
+using Financial.Chat.Infra.Identity.Config;
 using Financial.Chat.Infra.Ioc;
 using Financial.Chat.Web.API.Config;
-using Financial.Chat.Web.API.Configurations;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,16 +47,15 @@ namespace Financial.Chat.Web.API
             services.AddSingleton(AutoMapperConfig.RegisterMappings().CreateMapper());
 
             services.AddMvc();
+            services.AddLogging();
 
             services.AddHttpClient("FinancialChat", cfg => { cfg.Timeout = TimeSpan.FromSeconds(60); });
 
             services.AddHttpContextAccessor();
 
             services.AddMediatR(typeof(Startup));
-
-            services.AddMassTransitSetup();
-
-            services.AddHostedService<Worker>();
+            services.Configure<RabbitMqOptions>(options => Configuration.GetSection("RabbitMqConfig").Bind(options));
+            services.AddMassTransitSetup(Configuration.GetSection("RabbitMqConfig").Get<RabbitMqOptions>());
 
             DependencyInjectionResolver.RegisterServices(services);
 
@@ -75,8 +75,8 @@ namespace Financial.Chat.Web.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
+            //app.UseHttpsRedirection();
+            app.UseGlobalExceptionMiddleware();
             app.UseSwaggerSetup();
 
             app.UseRouting();
