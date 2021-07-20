@@ -47,7 +47,7 @@ To run this application you just have to execute the "docker-compose build" comm
 
 ## Other instructions
 
-To run this application you just have to execute the "run-script.bat" on base directory of the project. This script will run the dotnet cli commands to run the application and automatically open chrome navigator(normal mode and incognito mode). After running the web api is accessed by https://localhost:44367/swagger and web app by https://localhost:5002
+To run this application you just have to execute the "run-script.bat" on base directory of the project. This script will run the dotnet cli commands to run the application and automatically open chrome navigator(normal mode and incognito mode). After running the web api is accessed by https://localhost:5001/swagger and web app by https://localhost:5002
 
 Also, you can run the solution open cmd on base directory and execute the following commands:
 
@@ -66,12 +66,13 @@ Because the API starts using 5001 port and you have to install the rabbitmq in y
 If you are running in visual studio, follow the steps bellow:
 - Run the command "update-database" on Package Manage console with default project Financial.Chat.Infra.Data seted
 to create the database
+- Start installed RabbitMQ or run it with docker command (docker run --rm -it --hostname your-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management) 
 - Start the Financial.Chat.Web.API
 - Start The Financial.Chat.Web.App
 - Start The FinancialChat.MessageBroker
 
 ## Observations
-- The Financial.Chat.Web.API must be running using https and port 8082 (old: 44367)
 - If web api have been executing in another port, you must change de url port on ChatService class in namespace Financial.Chat.Web.App.Data
-- Is necessary to open in two different browsers or in normal mode and other tab in incognito mode since the token for authentication is saved on localstorage for make the requests on Web API
+and the api url in appsettings.{enviroment}.json on FinancialChat.MessageBroker
+- Is necessary to open in two different browsers or in normal mode and other tab in incognito mode because the token used for authentication is saved on localstorage for make the requests on Web API
 - Make sure that you are using the latest browser version (Chrome, Firefox, Microsoft Edge)
