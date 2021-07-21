@@ -64,8 +64,7 @@ OBS: In this case, you may have to change the links in the class ChatService(Fin
 Because the API starts using 5001 port and you have to install the rabbitmq in your machine, you also can use docker for that.
 
 If you are running in visual studio, follow the steps bellow:
-- Run the command "update-database" on Package Manage console with default project Financial.Chat.Infra.Data seted
-to create the database
+- Make sure you have the instance of SQL SERVER started
 - Start installed RabbitMQ or run it with docker command (docker run --rm -it --hostname your-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management) 
 - Start the Financial.Chat.Web.API
 - Start The Financial.Chat.Web.App
