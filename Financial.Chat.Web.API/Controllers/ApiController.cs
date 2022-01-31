@@ -23,14 +23,14 @@ namespace Financial.Chat.Web.API.Controllers
 
         protected IEnumerable<DomainNotification> Notifications => _notifications.GetNotifications();
 
-        protected bool EhOperacaoValida()
+        protected bool IsValidOperation()
         {
             return (!_notifications.HasNotifications());
         }
 
         protected new IActionResult Response(object result = null)
         {
-            if (EhOperacaoValida())
+            if (IsValidOperation())
             {
                 return Ok(new ApiOkReturn
                 {
